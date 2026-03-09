@@ -18,16 +18,46 @@ section .bss
     stack_top:
 
 section .text
-global _start: function (_start.end - _start)
+global _start
+extern kernel_main
+extern GDT
+
 _start:
-    mov esp, stack_top
+	mov esi, GDT
+	mov edi, 0x00000800
+	mov ecx, 56			; 7 seg * 8 bytes
+	rep movsb
 
-    extern kernel_main
-    call kernel_main
+	lgdt [dword gdtr]
+	jmp launch_protected_mode
 
-    cli
+launch_protected_mode:
+	mov eax, cr0
+	or eax, 1
+	mov cr0, eax
 
-.hang: hlt
-    jmp .hang
+	jmp dword 0x08:flush_segments
 
-.end:
+
+[bits 32]
+flush_segments:
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+
+	mov ax, 0x18
+	mov ss, ax
+	mov esp, stack_top
+
+	call kernel_main
+
+	cli
+	hlt
+	jmp $
+
+section .data
+gdtr:
+	dw 55			; limit
+	dd 0x00000800	; base

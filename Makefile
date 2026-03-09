@@ -5,7 +5,7 @@ IMAGE = $(IMAGE_DIR)/boot/kfs
 
 ISO = kfs.iso
 
-CFLAGS = -Wall -Wextra -Werror -m32 -ffreestanding -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -O2 -Isrc 
+CFLAGS = -Wall -Wextra -Werror -m32 -ffreestanding -fno-builtin -fno-exceptions -fno-stack-protector -nostdlib -nodefaultlibs -O2 -Isrc
 
 BOOT_OBJ = boot.o
 
@@ -17,7 +17,8 @@ KERNEL_FILES = kernel_main.c \
 				terminal.c \
 				strlen.c \
 				keyboard.c \
-				printk.c
+				printk.c \
+				gdt.c \
 
 SRC_DIR = src/
 
@@ -25,7 +26,7 @@ KERNEL_SRC = $(addprefix $(SRC_DIR), $(KERNEL_FILES))
 
 KERNEL_OBJS = $(KERNEL_SRC:.c=.o)
 
-all: $(ISO) 
+all: $(ISO)
 
 $(ISO): $(IMAGE)
 	@make build-iso --no-print-directory

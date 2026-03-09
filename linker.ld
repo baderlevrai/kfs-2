@@ -2,6 +2,10 @@ ENTRY(_start)
 
 SECTIONS
 {
+	.gdt 0x800 : {
+		KEEP(*(.GDT))
+	}
+
 	. = 1M;
 
 	.text BLOCK(4K) : ALIGN(4K)
