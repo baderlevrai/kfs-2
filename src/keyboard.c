@@ -114,6 +114,10 @@ uint8_t	handle_input(const char *input) {
 		outw(QEMU_ACPI_PORT, ACPI_SHUTDOWN); // will only work on qemu
 		return (1);
 	}
+	if (!strcmp(input, "reset")) {
+		outb(KEYBOARD_STATUS_PORT, KBD_RESET_CPU);
+		return (1);
+	}
 	return (0);
 }
 

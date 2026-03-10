@@ -49,3 +49,5 @@ typedef struct {
 #define KBD_KP_MINUS 0xBD
 #define KBD_KP_MULTIPLY 0xBE
 #define KBD_KP_DIVIDE 0xBF
+
+#define KBD_RESET_CPU 0xFE
