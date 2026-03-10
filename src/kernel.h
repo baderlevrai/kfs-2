@@ -41,6 +41,9 @@ typedef unsigned long		size_t;
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
 
+#define QEMU_ACPI_PORT 0x604
+#define ACPI_SHUTDOWN 0x2000
+
 void	terminal_initialize(void);
 void	terminal_wstr(const char* data);
 void	terminal_wchar(char c);
@@ -63,6 +66,10 @@ inline uint8_t inb(uint16_t port)
 	uint8_t ret;
 	asm volatile ( "inb %w1, %b0" : "=a"(ret) : "Nd"(port) : "memory");
 	return ret;
+}
+
+inline void outw(uint16_t port, uint16_t value) {
+    __asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
 }
 
 #endif

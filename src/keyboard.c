@@ -109,6 +109,14 @@ void    no_ascii_handler(unsigned char key) {
     terminal_wstr(special_key_names[index]);
 }
 
+uint8_t	handle_input(const char *input) {
+	if (!strcmp(input, "halt"))	{
+		outw(QEMU_ACPI_PORT, ACPI_SHUTDOWN); // will only work on qemu
+		return (1);
+	}
+	return (0);
+}
+
 void	kbd_handler(void) {
 	int is_extended = 0;
 
@@ -167,7 +175,7 @@ void	kbd_handler(void) {
                 terminal_wchar(key);
 				if (key == '\n') {
 					input[len_input] = 0;
-					if (len_input)
+					if (len_input && !handle_input(input))
 						printk("unknown command: %s\n", input);
 					len_input = 0;
 					printk("minishell$ ");
