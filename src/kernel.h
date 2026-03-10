@@ -46,6 +46,7 @@ void	terminal_wstr(const char* data);
 void	terminal_wchar(char c);
 void	change_tty(uint8_t tty);
 size_t	strlen(const char* str);
+int		strcmp(const char *s1, const char *s2);
 
 void	kbd_handler(void);
 void	kbd_init(void);

@@ -100,6 +100,8 @@ void    no_ascii_handler(unsigned char key) {
         kbd_numpad_handler(key);
         return;
     }
+	if (key == KBD_F1 || key == KBD_F2)
+		return;
 
     terminal_wstr(special_key_names[index]);
 }
@@ -138,6 +140,8 @@ void	kbd_handler(void) {
 		} else { //Pressed
 			unsigned char key = kbd_map[scancode];
 
+			if (key == KBD_F1 || key == KBD_F2)
+				change_tty((key == KBD_F2));
 			if (key == KBD_LALT) {
 				options.alt = 1;
 			} else if (key == KBD_LCTRL) {
@@ -157,9 +161,6 @@ void	kbd_handler(void) {
             } else {
                 terminal_wchar(key);
             }
-
-			if (key == KBD_F1 || key == KBD_F2)
-				change_tty((key == KBD_F2));
 		}
 	}
 }
