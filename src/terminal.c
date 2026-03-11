@@ -101,6 +101,16 @@ void terminal_write(const char* data, size_t size)
 		terminal_putchar(data[i]);
 }
 
+void handle_backspace() {
+	if (terminal_column <= 11) return; //Juste avant le prompt
+
+	terminal_column--;
+
+	terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+
+	update_cursor(terminal_column, terminal_row);
+}
+
 void terminal_wchar(char c)
 {
 	terminal_putchar(c);
