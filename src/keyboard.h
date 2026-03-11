@@ -51,3 +51,5 @@ typedef struct {
 #define KBD_KP_DIVIDE 0xBF
 
 #define KBD_RESET_CPU 0xFE
+
+#define KBD_EXTEND_DEL 0x53

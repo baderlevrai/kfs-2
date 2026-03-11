@@ -101,6 +101,16 @@ void terminal_write(const char* data, size_t size)
 		terminal_putchar(data[i]);
 }
 
+void handle_backspace() {
+    if (terminal_row == 0) return;
+
+	terminal_row--;
+
+	terminal_putchar(' ');
+	
+	update_cursor(terminal_column, terminal_row);
+}
+
 void terminal_wchar(char c)
 {
 	terminal_putchar(c);

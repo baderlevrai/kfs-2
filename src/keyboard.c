@@ -80,12 +80,10 @@ void	kbd_init(void) {
 	options.numlock = 0;
 }
 
-void	kbd_numpad_handler(unsigned char key) {
-	if (!options.numlock) return;
+uint8_t	get_numpad(unsigned char key) {
+	if (!options.numlock) return 0;
 
-	uint8_t np_key = key & 0x0F;
-
-	terminal_wchar(numpad_map[np_key]);
+	return numpad_map[key & 0x0F];
 }
 
 int	is_numpad(unsigned char key) {
@@ -96,14 +94,14 @@ int is_no_ascii(unsigned char key) {
     return key >= 128; //0x80
 }
 
-void    no_ascii_handler(unsigned char key) {
-    if (is_numpad(key)) {
-        kbd_numpad_handler(key);
-        return;
-    }
-	if (key == KBD_F1 || key == KBD_F2)
-		return;
-}
+// void    no_ascii_handler(unsigned char key) {
+//     if (is_numpad(key)) {
+//         kbd_numpad_handler(key);
+//         return;
+//     }
+// 	if (key == KBD_F1 || key == KBD_F2)
+// 		return;
+// }
 
 uint8_t	handle_input(const char *input) {
 	if (!strcmp(input, "halt"))	{
@@ -117,12 +115,48 @@ uint8_t	handle_input(const char *input) {
 	return (0);
 }
 
+void	handle_release(uint8_t scancode) {
+	uint8_t key_release = scancode & 0x7F;
+	unsigned char key = kbd_map[key_release];
+
+	if (key == KBD_LALT) {
+		options.alt = 0;
+	} else if (key == KBD_LCTRL) {
+		options.ctrl = 0;
+	} else if (key == KBD_LSHIFT) {
+		options.lshift = 0;
+	} else if (key == KBD_RSHIFT) {
+		options.rshift = 0;
+	}
+}
+
+void	handle_state_change(uint8_t key)
+{
+	if (key == KBD_F1 || key == KBD_F2)
+		change_tty((key == KBD_F2));
+	
+	if (key == KBD_LALT) {
+		options.alt = 1;
+	} else if (key == KBD_LCTRL) {
+		options.ctrl = 1;
+	} else if (key == KBD_CAPSLOCK) {
+		options.capslock = !options.capslock;
+	} else if (key == KBD_NUMLOCK) {
+		options.numlock = !options.numlock; 
+	} else if (key == KBD_LSHIFT) {
+		options.lshift = 1;
+	} else if (key == KBD_RSHIFT) {
+		options.rshift = 1;
+	}
+}
+
 void	kbd_handler(void) {
 	int is_extended = 0;
 
 	printk("minishell$ ");
 	while (1) {
 		uint8_t scancode = read_keyboard();
+		// printk("%d\\", scancode);
 
 		if (scancode == 0xE0 || scancode == 0xE1) {
 			is_extended = 1;
@@ -134,56 +168,34 @@ void	kbd_handler(void) {
 			continue;
 		}
 		if (scancode & 0x80) { //Released
-
-			uint8_t key_release = scancode & 0x7F;
-			unsigned char key = kbd_map[key_release];
-
-			if (key == KBD_LALT) {
-				options.alt = 0;
-			} else if (key == KBD_LCTRL) {
-				options.ctrl = 0;
-			} else if (key == KBD_LSHIFT) {
-				options.lshift = 0;
-			} else if (key == KBD_RSHIFT) {
-				options.rshift = 0;
-			}
+			handle_release(scancode);
 
 		} else { //Pressed
-			unsigned char key = kbd_map[scancode];
+			uint8_t key = kbd_map[scancode];
 
-			if (key == KBD_F1 || key == KBD_F2)
-				change_tty((key == KBD_F2));
-			if (key == KBD_LALT) {
-				options.alt = 1;
-			} else if (key == KBD_LCTRL) {
-				options.ctrl = 1;
-			} else if (key == KBD_CAPSLOCK) {
-				options.capslock = !options.capslock;
-			} else if (key == KBD_NUMLOCK) {
-				options.numlock = !options.numlock; 
-			} else if (key == KBD_LSHIFT) {
-				options.lshift = 1;
-			} else if (key == KBD_RSHIFT) {
-				options.rshift = 1;
+			if (is_no_ascii(key)) {
+				handle_state_change(key);
+
+				if (!is_numpad(key)) continue;
+
+				key = get_numpad(key);
+				if (key == 0 ) continue;
+
 			}
 
-            if (is_no_ascii(key)) {
-                no_ascii_handler(key);
-            } else {
-				if (len_input[curr_tty] == 99 && key != '\n')
-					continue;
-                terminal_wchar(key);
-				if (key == '\n') {
-					input[curr_tty][len_input[curr_tty]] = 0;
-					if (len_input[curr_tty] && !handle_input(input[curr_tty]))
-						printk("unknown command: %s\n", input[curr_tty]);
-					len_input[curr_tty] = 0;
-					printk("minishell$ ");
-					continue ;
-				}
-				input[curr_tty][len_input[curr_tty]] = key;
-				len_input[curr_tty]++;
-            }
+			if (len_input[curr_tty] == 99 && key != '\n') continue;
+
+			terminal_wchar(key);
+			if (key == '\n') {
+				input[curr_tty][len_input[curr_tty]] = 0;
+				if (len_input[curr_tty] && !handle_input(input[curr_tty]))
+					printk("unknown command: %s\n", input[curr_tty]);
+				len_input[curr_tty] = 0;
+				printk("minishell$ ");
+				continue ;
+			}
+			input[curr_tty][len_input[curr_tty]] = key;
+			len_input[curr_tty]++;
 		}
 	}
 }
