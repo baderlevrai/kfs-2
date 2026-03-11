@@ -97,16 +97,12 @@ int is_no_ascii(unsigned char key) {
 }
 
 void    no_ascii_handler(unsigned char key) {
-    unsigned char index = key & 0x3F;
-
     if (is_numpad(key)) {
         kbd_numpad_handler(key);
         return;
     }
 	if (key == KBD_F1 || key == KBD_F2)
 		return;
-
-    terminal_wstr(special_key_names[index]);
 }
 
 uint8_t	handle_input(const char *input) {
@@ -114,7 +110,7 @@ uint8_t	handle_input(const char *input) {
 		outw(QEMU_ACPI_PORT, ACPI_SHUTDOWN); // will only work on qemu
 		return (1);
 	}
-	if (!strcmp(input, "reset")) {
+	if (!strcmp(input, "reboot")) {
 		outb(KEYBOARD_STATUS_PORT, KBD_RESET_CPU);
 		return (1);
 	}
