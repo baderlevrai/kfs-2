@@ -44,6 +44,8 @@ typedef unsigned long		size_t;
 #define QEMU_ACPI_PORT 0x604
 #define ACPI_SHUTDOWN 0x2000
 
+#define MAX_TTY 2
+
 void	terminal_initialize(void);
 void	terminal_wstr(const char* data);
 void	terminal_wchar(char c);
@@ -71,5 +73,7 @@ inline uint8_t inb(uint16_t port)
 inline void outw(uint16_t port, uint16_t value) {
     __asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
 }
+
+extern uint8_t	curr_tty;
 
 #endif

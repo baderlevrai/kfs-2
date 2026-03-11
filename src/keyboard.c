@@ -62,8 +62,8 @@ const char* special_key_names[] = {
 
 kbd_opt_t options;
 
-char	input[100] = { 0 };
-size_t	len_input = 0;
+char	input[MAX_TTY][100] = { 0 };
+size_t	len_input[MAX_TTY] = { 0 };
 
 uint8_t	read_keyboard(void) {
 	while (!(inb(KEYBOARD_STATUS_PORT) & 1)) {}
@@ -174,19 +174,19 @@ void	kbd_handler(void) {
             if (is_no_ascii(key)) {
                 no_ascii_handler(key);
             } else {
-				if (len_input == 99 && key != '\n')
+				if (len_input[curr_tty] == 99 && key != '\n')
 					continue;
                 terminal_wchar(key);
 				if (key == '\n') {
-					input[len_input] = 0;
-					if (len_input && !handle_input(input))
-						printk("unknown command: %s\n", input);
-					len_input = 0;
+					input[curr_tty][len_input[curr_tty]] = 0;
+					if (len_input[curr_tty] && !handle_input(input[curr_tty]))
+						printk("unknown command: %s\n", input[curr_tty]);
+					len_input[curr_tty] = 0;
 					printk("minishell$ ");
 					continue ;
 				}
-				input[len_input] = key;
-				len_input++;
+				input[curr_tty][len_input[curr_tty]] = key;
+				len_input[curr_tty]++;
             }
 		}
 	}

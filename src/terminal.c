@@ -6,8 +6,8 @@ uint8_t		terminal_color;
 uint16_t*	terminal_buffer = (uint16_t*)VGA_MEMORY;
 
 uint8_t		curr_tty = 0;
-uint16_t	ttys[2][VGA_HEIGHT * VGA_WIDTH];
-size_t		ttys_cursor[2][2] = { 0 };
+uint16_t	ttys[MAX_TTY][VGA_HEIGHT * VGA_WIDTH];
+size_t		ttys_cursor[MAX_TTY][2] = { 0 };
 
 inline uint8_t	vga_entry_color(enum vga_color fg, enum vga_color bg)
 {
