@@ -33,6 +33,9 @@ all: $(ISO)
 $(ISO): $(IMAGE)
 	@make build-iso --no-print-directory
 
+docker:
+	docker build . -t kfs-builder
+
 build: $(BOOT_OBJ) $(KERNEL_OBJS)
 	echo $(KERNEL_OBJS)
 
@@ -55,7 +58,7 @@ build-iso: $(IMAGE)
 	@echo Iso created.
 
 run: $(ISO)
-	@qemu-system-x86_64 $(ISO)
+	@qemu-system-i386 $(ISO)
 
 fclean:
 	@rm -f $(BOOT_OBJ)
