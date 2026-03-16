@@ -20,6 +20,7 @@ KERNEL_FILES = kernel_main.c \
 				keyboard.c \
 				printk.c \
 				gdt.c \
+				print_stack.c \
 
 SRC_DIR = src/
 

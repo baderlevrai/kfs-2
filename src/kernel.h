@@ -56,9 +56,10 @@ int		strcmp(const char *s1, const char *s2);
 void	kbd_handler(void);
 void	kbd_init(void);
 
-void handle_backspace();
+void	handle_backspace();
 
-int printk(const char *format, ...);
+int		printk(const char *format, ...);
+void	print_stack(void);
 
 inline void outb(uint16_t port, uint8_t val)
 {

@@ -13,9 +13,11 @@ section .multiboot
 
 section .bss
     align 16
-    stack_bottom:
+    global stack_bottom
+	stack_bottom:
     resb 16384
-    stack_top:
+    global stack_top
+	stack_top:
 
 section .text
 global _start

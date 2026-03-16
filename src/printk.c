@@ -43,7 +43,7 @@ void  print_addr(void *ptr, size_t *len)
 {
   char *base = "0123456789ABCDEF";
 
-  if ((uintptr_t)ptr > 16)
+  if ((uintptr_t)ptr >= 16)
   {
     print_addr((void*)(((uintptr_t)ptr - ((uintptr_t)ptr % 16)) / 16), len);
     ptr = (void*)((uintptr_t)ptr % 16);
@@ -51,18 +51,18 @@ void  print_addr(void *ptr, size_t *len)
   print_char(base[(uintptr_t)ptr], len);
 }
 
-uint8_t  handle_format(char c, size_t *len, va_list args)
+uint8_t  handle_format(char c, size_t *len, va_list *args)
 {
   size_t old_len = *len;
 
   if (c == 'c')
-    print_char(va_arg(args, int), len);
+    print_char(va_arg(*args, int), len);
   if (c == 's')
-    print_str(va_arg(args, char *), len);
+    print_str(va_arg(*args, char *), len);
   if (c == 'd' || c == 'i')
-    print_nb(va_arg(args, int), len);
+    print_nb(va_arg(*args, int), len);
   if (c == 'p')
-    print_addr(va_arg(args, void *), len);
+    print_addr(va_arg(*args, void *), len);
   if (old_len == *len)
     return (0);
   return (1);
@@ -87,7 +87,7 @@ int printk(const char *format, ...)
     else
     {
       index++;
-      if (!handle_format(*(format + index), &len, args))
+      if (!handle_format(*(format + index), &len, &args))
         return (-1);
     }
     index++;

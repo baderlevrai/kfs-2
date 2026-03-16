@@ -112,6 +112,10 @@ uint8_t	handle_input(const char *input) {
 		outb(KEYBOARD_STATUS_PORT, KBD_RESET_CPU);
 		return (1);
 	}
+	if (!strcmp(input, "stack")) {
+		print_stack();
+		return (1);
+	}
 	return (0);
 }
 
